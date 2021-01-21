@@ -28,6 +28,8 @@ namespace BNG {
         CharacterController characterController;
         BNGPlayerController bngController;
         PlayerGravity playerGravity;
+        PlayerClimbing playerClimbing;
+
         AudioSource audioSource;
 
         // How far away the grapple is in meters
@@ -53,6 +55,7 @@ namespace BNG {
                 characterController = player.GetComponentInChildren<CharacterController>();
                 bngController = player.GetComponentInChildren<BNGPlayerController>();
                 playerGravity = player.GetComponentInChildren<PlayerGravity>();
+                playerClimbing = player.GetComponentInChildren<PlayerClimbing>();
             }
             else {
                 Debug.Log("No player object found.");
@@ -146,7 +149,7 @@ namespace BNG {
 
             // Reset Climbing
             ClimbHelper.transform.localPosition = Vector3.zero;
-            bngController.RemoveClimber(thisGrabber);
+            playerClimbing.RemoveClimber(thisGrabber);
             climbing = false;
 
             grappling = false;
@@ -285,7 +288,7 @@ namespace BNG {
                 if(!climbing && !isDynamic) {
                     // Add climbable / grabber
                     ClimbHelper.transform.localPosition = Vector3.zero;
-                    bngController.AddClimber(ClimbHelper, thisGrabber);
+                    playerClimbing.AddClimber(ClimbHelper, thisGrabber);
                     climbing = true;
                 }
                 

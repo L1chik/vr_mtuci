@@ -95,8 +95,10 @@ namespace BNG {
                     }
                 }
             }
+        }
 
-            
+        public void OnSliderChange(float sliderValue) {
+            GetComponent<Light>().intensity = sliderValue;
         }
 
         void FixedUpdate() {
@@ -104,7 +106,7 @@ namespace BNG {
             if (ZeroMassWhenNotHeld && parentGrabbable.BeingHeld && rigid) {
                 rigid.mass = initialMass;
             }
-            else if(ZeroMassWhenNotHeld && rigid) {
+            else if (ZeroMassWhenNotHeld && rigid) {
                 // Set mass to very low to prevent stuttering when not held
                 rigid.mass = 0.0001f;
             }

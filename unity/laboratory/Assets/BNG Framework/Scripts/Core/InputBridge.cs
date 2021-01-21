@@ -49,6 +49,8 @@ namespace BNG {
         BackButtonDown
     }
 
+    
+
     /// <summary>
     /// Controller Options available to bind buttons to via Inspector. Input is relative to the controller holding it.
     /// Ex : Button 1 = Button A if held in Right controller, Button X if held in Left.
@@ -163,6 +165,9 @@ namespace BNG {
         public bool RightGripDown = false;
 
         [Header("Trigger")]
+        /// <summary>
+        /// How far Left Trigger is Held down. Values : 0 - 1 (Fully Open / Closed)
+        /// </summary>
         public float LeftTrigger = 0;
         public bool LeftTriggerNear = false;
         public bool LeftTriggerUp = false;
@@ -507,6 +512,8 @@ namespace BNG {
                 RightTriggerDown = prevVal < _downThreshold && RightTrigger >= _downThreshold;
 
                 // While OculusUsages.indexTouch is recommended, only CommonUsages.indexTouch is currently providing proper values
+#pragma warning disable 0618
+
                 LeftTriggerNear = getFeatureUsage(primaryLeftController, CommonUsages.indexTouch) > 0;
                 LeftThumbNear = getFeatureUsage(primaryLeftController, CommonUsages.thumbTouch) > 0;
 
@@ -520,6 +527,7 @@ namespace BNG {
                 RightTriggerNear = getFeatureUsage(primaryRightController, CommonUsages.indexTouch) > 0;
                 RightThumbNear = getFeatureUsage(primaryRightController, CommonUsages.thumbTouch) > 0;
 
+#pragma warning restore 0618
                 prevBool = AButton;
                 AButton = getFeatureUsage(primaryRightController, CommonUsages.primaryButton);
                 AButtonDown = prevBool == false && AButton == true;
@@ -580,14 +588,19 @@ namespace BNG {
             
             LeftTrigger = correctValue(SteamVR_Actions.vRIF_LeftTrigger.axis);
             RightTrigger = correctValue(SteamVR_Actions.vRIF_RightTrigger.axis);
+
             AButton = SteamVR_Actions.vRIF_AButton.state;
             AButtonDown = SteamVR_Actions.vRIF_AButton.stateDown;
+            AButtonUp = SteamVR_Actions.vRIF_AButton.stateUp;
             BButton = SteamVR_Actions.vRIF_BButton.state;
             BButtonDown = SteamVR_Actions.vRIF_BButton.stateDown;
+            BButtonUp = SteamVR_Actions.vRIF_AButton.stateUp;
             XButton = SteamVR_Actions.vRIF_XButton.state;
             XButtonDown = SteamVR_Actions.vRIF_XButton.stateDown;
+            XButtonUp = SteamVR_Actions.vRIF_XButton.stateUp;
             YButton = SteamVR_Actions.vRIF_YButton.state;
             YButtonDown = SteamVR_Actions.vRIF_YButton.stateDown;
+            YButtonUp = SteamVR_Actions.vRIF_YButton.stateUp;
 #endif
         }
 
@@ -664,6 +677,10 @@ namespace BNG {
             return (float)System.Math.Round(inputValue * 1000f) / 1000f;
         }
 
+
+        /// <summary>
+        /// Returns true if the given binding is pressed
+        /// </summary>
         public bool GetControllerBindingValue(ControllerBinding val) {
             if (val == ControllerBinding.AButton && AButton) { return true; }
             if (val == ControllerBinding.AButtonDown && AButtonDown) { return true; }

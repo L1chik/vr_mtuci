@@ -68,17 +68,21 @@ namespace BNG {
 
         private float _verticalSpeed = 0; // Keep track of vertical speed
 
-        void Start() {
-            characterController = GetComponent<CharacterController>();
-            playerController = GetComponent<BNGPlayerController>();
-            if(playerController == null) {
-                playerController = GetComponentInParent<BNGPlayerController>();
-            }
-        }
-
-        void Update() {
+        public virtual void Update() {
+            CheckControllerReferences();
             UpdateInputs();            
             MoveCharacter();
+        }
+
+        public virtual void CheckControllerReferences() {
+            // Component may be called while disabled, so check for references here
+            if (playerController == null) {
+                playerController = GetComponentInParent<BNGPlayerController>();
+            }
+
+            if(characterController == null) {
+                characterController = GetComponent<CharacterController>();
+            }
         }
 
         public virtual void UpdateInputs() {
@@ -90,7 +94,7 @@ namespace BNG {
 
             // Start with VR Controller Input
             Vector2 primaryAxis = GetAxisInput();
-            if (playerController.IsGrounded()  ) {
+            if (playerController && playerController.IsGrounded()  ) {
                 movementX = primaryAxis.x;
                 movementZ = primaryAxis.y;
             }
@@ -139,7 +143,7 @@ namespace BNG {
 
         public virtual void MoveCharacter() {
 
-            if(movementDisabled) {
+            if(movementDisabled || characterController == null) {
                 return;
             }
 
@@ -147,7 +151,7 @@ namespace BNG {
             moveDirection = transform.TransformDirection(moveDirection);
 
             // Check for jump value
-            if (playerController.IsGrounded() && !movementDisabled) {
+            if (playerController != null && playerController.IsGrounded() && !movementDisabled) {
                 // Reset jump speed if grounded
                 _verticalSpeed = 0;
                 if (CheckJump()) {
@@ -157,7 +161,10 @@ namespace BNG {
 
             moveDirection.y = _verticalSpeed;
 
-            playerController.LastPlayerMoveTime = Time.time;
+            if(playerController) {
+                playerController.LastPlayerMoveTime = Time.time;
+            }
+            
 
             if(moveDirection != Vector3.zero) {
                 characterController.Move(moveDirection * Time.deltaTime);
@@ -186,7 +193,7 @@ namespace BNG {
         public virtual bool CheckJump() {
 
             // Don't jump if not grounded
-            if(!playerController.IsGrounded()) {
+            if(playerController != null && !playerController.IsGrounded()) {
                 return false;
             }
 
