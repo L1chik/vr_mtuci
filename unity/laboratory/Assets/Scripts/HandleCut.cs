@@ -1,35 +1,57 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using BNG;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class HandleCut : MonoBehaviour
 {
-    private GameObject _objectToCut;
-    private Transform _cutterTransform;
-    private float _previousPosY;
+    public UnityEvent onFinishCut;
+
+    private GameObject objectToCut;
+    private bool isStripperActive;
 
     private void Start()
     {
-        _objectToCut = transform.parent.gameObject;
+        objectToCut = transform.parent.gameObject;
+        var stripperEvents = GameObject.FindGameObjectWithTag("Stripper").GetComponent<GrabbableUnityEvents>();
+        Debug.Log(stripperEvents);
+
+        stripperEvents.onTriggerDown.AddListener(Enable);
+        stripperEvents.onTriggerUp.AddListener(Disable);
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (!other.tag.Equals("Cutter")) return;
+        if (!other.tag.Equals("Cutter") || !isStripperActive) return;
 
-        transform.parent.localPosition = Vector3.MoveTowards(transform.parent.localPosition,
-            transform.parent.localPosition + new Vector3(0, 0.5f, 0),
+        var localPosition = transform.parent.localPosition;
+        localPosition = Vector3.MoveTowards(localPosition,
+            localPosition + new Vector3(0, 0.5f, 0),
             0.1f * Time.deltaTime);
+        transform.parent.localPosition = localPosition;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.tag.Equals("Finish")) return;
 
-        _objectToCut.GetComponent<Rigidbody>().isKinematic = false;
-        Destroy(_objectToCut.GetComponent<ConfigurableJoint>());
-        
+        objectToCut.transform.parent = null;
+        objectToCut.AddComponent<Rigidbody>();
+
+        onFinishCut?.Invoke();
+
         Destroy(gameObject);
+    }
+
+    private void Enable()
+    {
+        isStripperActive = true;
+    }
+
+    private void Disable()
+    {
+        isStripperActive = false;
     }
 }

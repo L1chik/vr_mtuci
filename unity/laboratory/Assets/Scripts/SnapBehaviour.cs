@@ -1,3 +1,4 @@
+using BNG;
 using UnityEngine;
 
 public class SnapBehaviour : MonoBehaviour
@@ -24,6 +25,7 @@ public class SnapBehaviour : MonoBehaviour
 
         var confJoint = otherObject.AddComponent<ConfigurableJoint>();
 
+        otherObject.GetComponent<Grabbable>().ParentToHands = false;
         otherObject.transform.localPosition = new Vector3(0.015f, -0.02f, 0.035f);
         otherObject.transform.localRotation = Quaternion.Euler(-90, 60, 40);
 

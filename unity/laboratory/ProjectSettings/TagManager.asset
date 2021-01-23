@@ -7,6 +7,8 @@ TagManager:
   - projectile
   - FxTemporaire
   - Cutter
+  - CutTrigger
+  - Stripper
   layers:
   - Default
   - TransparentFX
