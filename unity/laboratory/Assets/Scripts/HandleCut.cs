@@ -8,7 +8,7 @@ using UnityEngine.Events;
 public class HandleCut : MonoBehaviour
 {
     public UnityEvent onFinishCut;
-
+    
     private GameObject objectToCut;
     private bool isStripperActive;
 
@@ -16,7 +16,6 @@ public class HandleCut : MonoBehaviour
     {
         objectToCut = transform.parent.gameObject;
         var stripperEvents = GameObject.FindGameObjectWithTag("Stripper").GetComponent<GrabbableUnityEvents>();
-        Debug.Log(stripperEvents);
 
         stripperEvents.onTriggerDown.AddListener(Enable);
         stripperEvents.onTriggerUp.AddListener(Disable);
