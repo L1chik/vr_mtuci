@@ -20,6 +20,7 @@ public class HandleCleaverCut : MonoBehaviour
         objectToCut.transform.parent = null;
         objectToCut.AddComponent<Rigidbody>();
 
+        FindObjectOfType<TasksLogic>().TaskIsDone("Cleaver");
         Destroy(gameObject);
     }
 }
