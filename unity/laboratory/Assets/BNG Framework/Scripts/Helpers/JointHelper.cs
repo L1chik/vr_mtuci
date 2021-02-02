@@ -1,4 +1,5 @@
-﻿using BNG;
+﻿using System;
+using BNG;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,6 +49,10 @@ namespace BNG {
 
             if (LockXRotation || LockYRotation || LockZRotation) {
                 currentRotation = transform.localEulerAngles;
+                if (name.Equals("LidMain"))
+                {
+                    Debug.Log(currentRotation);
+                }
                 transform.localEulerAngles = new Vector3(LockXRotation ? initialRotation.x : currentRotation.x, LockYRotation ? initialRotation.y : currentRotation.y, LockZRotation ? initialRotation.z : currentRotation.z);
             }
         }
@@ -55,7 +60,7 @@ namespace BNG {
         void LateUpdate() {
             lockPosition();
         }
-
+        
         void FixedUpdate() {
             lockPosition();
         }
