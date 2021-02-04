@@ -7,8 +7,8 @@ using UnityEngine;
 public class WeldController : MonoBehaviour
 {
     [SerializeField] private GameObject mainLid;
-    [SerializeField] private bool isLeftCableSnapped;
-    [SerializeField] private bool isRightCableSnapped;
+    private bool isLeftCableSnapped;
+    private bool isRightCableSnapped;
 
     private JointHelper _lidJointHelper;
 
@@ -53,5 +53,15 @@ public class WeldController : MonoBehaviour
     private void UnlockLid()
     {
         _lidJointHelper.LockXRotation = _lidJointHelper.LockYRotation = _lidJointHelper.LockZRotation = false;
+    }
+
+    public void SetIsLeftCableSnapped(bool isSnapped)
+    {
+        isLeftCableSnapped = isSnapped;
+    }
+    
+    public void SetIsRightCableSnapped(bool isSnapped)
+    {
+        isRightCableSnapped = isSnapped;
     }
 }
