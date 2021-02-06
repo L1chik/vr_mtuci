@@ -22,8 +22,6 @@ namespace BNG {
         public KeyCode LeftTrigger = KeyCode.V;
         public KeyCode LeftGrip = KeyCode.B;
         public KeyCode LeftThumbNear = KeyCode.N;
-        
-        public KeyCode Button1 = KeyCode.R;
 
 
         float mouseRotationX;
@@ -144,8 +142,6 @@ namespace BNG {
             InputBridge.Instance.RightTrigger = Input.GetKey(RightTrigger) ? 1f : 0;
             InputBridge.Instance.RightGrip = Input.GetKey(RightGrip) ? 1f : 0;
             InputBridge.Instance.RightThumbNear = Input.GetKey(RightThumbNear);
-
-            InputBridge.Instance.BButton = Input.GetKey(Button1);
         }
 
         public void CheckPlayerControls() {

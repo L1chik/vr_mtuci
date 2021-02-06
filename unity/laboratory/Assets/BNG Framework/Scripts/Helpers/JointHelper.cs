@@ -1,5 +1,4 @@
-﻿using System;
-using BNG;
+﻿using BNG;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,7 +55,7 @@ namespace BNG {
         void LateUpdate() {
             lockPosition();
         }
-        
+
         void FixedUpdate() {
             lockPosition();
         }

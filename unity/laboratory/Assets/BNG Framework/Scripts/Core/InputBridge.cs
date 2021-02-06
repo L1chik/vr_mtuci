@@ -570,16 +570,10 @@ namespace BNG {
 
             LeftThumbstickAxis = ApplyDeadZones(SteamVR_Actions.vRIF_LeftThumbstickAxis.axis, ThumbstickDeadzoneX, ThumbstickDeadzoneY);
             RightThumbstickAxis = ApplyDeadZones(SteamVR_Actions.vRIF_RightThumbstickAxis.axis, ThumbstickDeadzoneX, ThumbstickDeadzoneY);
-
-            var prevBool = LeftThumbstick;
             LeftThumbstick = SteamVR_Actions.vRIF_LeftThumbstickDown.state;
-            LeftThumbstickDown = prevBool == false && LeftThumbstick == true;
-            LeftThumbstickUp = prevBool == true && LeftThumbstick == false;
-
-            prevBool = RightThumbstick;
+            LeftThumbstickDown = SteamVR_Actions.vRIF_LeftThumbstickDown.stateDown;
             RightThumbstick = SteamVR_Actions.vRIF_RightThumbstickDown.state;
-            RightThumbstickDown = prevBool == false && RightThumbstick == true;
-            RightThumbstickUp = prevBool == true && RightThumbstick == false;
+            RightThumbstickDown = SteamVR_Actions.vRIF_RightThumbstickDown.stateDown;
             
             LeftThumbNear = SteamVR_Actions.vRIF_LeftThumbstickNear.state;
             RightThumbNear = SteamVR_Actions.vRIF_RightThumbstickNear.state;
@@ -591,16 +585,9 @@ namespace BNG {
             prevVal = RightGrip;
             RightGrip = correctValue(SteamVR_Actions.vRIF_RightGrip.axis);
             RightGripDown = prevVal < _downThreshold && RightGrip >= _downThreshold;
-
-            prevVal = LeftTrigger;
+            
             LeftTrigger = correctValue(SteamVR_Actions.vRIF_LeftTrigger.axis);
-            LeftTriggerDown = prevVal < _downThreshold && LeftTrigger >= _downThreshold;
-            LeftTriggerUp = prevVal >= _downThreshold && LeftTrigger == 0;
-
-            prevVal = RightTrigger;
             RightTrigger = correctValue(SteamVR_Actions.vRIF_RightTrigger.axis);
-            RightTriggerDown = prevVal < _downThreshold && RightTrigger >= _downThreshold;
-            RightTriggerUp = prevVal >= _downThreshold && RightTrigger == 0;
 
             AButton = SteamVR_Actions.vRIF_AButton.state;
             AButtonDown = SteamVR_Actions.vRIF_AButton.stateDown;
@@ -614,14 +601,6 @@ namespace BNG {
             YButton = SteamVR_Actions.vRIF_YButton.state;
             YButtonDown = SteamVR_Actions.vRIF_YButton.stateDown;
             YButtonUp = SteamVR_Actions.vRIF_YButton.stateUp;
-
-            prevBool = StartButton;
-            StartButton = SteamVR_Actions.vRIF_Start.state;
-            StartButtonDown = prevBool == false && StartButton == true;
-
-            prevBool = BackButton;
-            BackButton = SteamVR_Actions.vRIF_Back.state;
-            BackButtonDown = prevBool == false && BackButton == true;
 #endif
         }
 
