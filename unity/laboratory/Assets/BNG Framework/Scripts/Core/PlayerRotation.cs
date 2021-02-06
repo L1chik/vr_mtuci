@@ -12,14 +12,12 @@ namespace BNG {
     }
     public class PlayerRotation : MonoBehaviour {
 
-        [Header("Input")]
         [Tooltip("Set to false to skip Update")]
         public bool AllowInput = true;
 
         [Tooltip("Used to determine whether to turn left / right. This can be an X Axis on the thumbstick, for example. -1 to snap left, 1 to snap right.")]
         public List<InputAxis> inputAxis = new List<InputAxis>() { InputAxis.RightThumbStickAxis };
 
-        [Header("Smooth / Snap Turning")]
         [Tooltip("Snap rotation will rotate a fixed amount of degrees on turn. Smooth will linearly rotate the player.")]
         public RotationMechanic RotationType = RotationMechanic.Snap;
 
@@ -35,7 +33,6 @@ namespace BNG {
         [Tooltip("Thumbstick X axis must be >= this amount to be considered an input event")]
         public float SmoothTurnMinInput = 0.1f;
 
-        [Header("Keyboard Input")]
         /// <summary>
         /// Allow Q,E to rotate player
         /// </summary>

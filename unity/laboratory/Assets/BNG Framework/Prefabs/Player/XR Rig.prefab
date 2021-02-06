@@ -73,14 +73,14 @@ MonoBehaviour:
   DefaultHoldType: 0
   DefaultGrabButton: 0
   GripAmount: 0.9
-  ReleaseGripAmount: 0.5
+  ReleaseGripAmount: 0.1
   GrabCheckSeconds: 1
   EquipGrabbableOnStart: {fileID: 0}
   HandsGraphics: {fileID: 3181413271529996814}
   HeldGrabbable: {fileID: 0}
+  LastDropTime: 0
   ForceGrab: 0
   ForceRelease: 0
-  LastDropTime: 0
   PreviousPosition: {x: 0, y: 0, z: 0}
   DummyTransform: {fileID: 0}
   FreshGrip: 1
@@ -979,7 +979,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1447509482774238497}
   m_Layer: 0
-  m_Name: ModelsRight
+  m_Name: Models
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1254,14 +1254,14 @@ MonoBehaviour:
   DefaultHoldType: 0
   DefaultGrabButton: 0
   GripAmount: 0.9
-  ReleaseGripAmount: 0.5
+  ReleaseGripAmount: 0.1
   GrabCheckSeconds: 1
   EquipGrabbableOnStart: {fileID: 0}
   HandsGraphics: {fileID: 1447509482774238497}
   HeldGrabbable: {fileID: 0}
+  LastDropTime: 0
   ForceGrab: 0
   ForceRelease: 0
-  LastDropTime: 0
   PreviousPosition: {x: 0, y: 0, z: 0}
   DummyTransform: {fileID: 0}
   FreshGrip: 1
@@ -1945,7 +1945,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3181413271529996814}
   m_Layer: 0
-  m_Name: ModelsLeft
+  m_Name: Models
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2611,9 +2611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FadeOnSceneLoaded: 1
   FadeColor: {r: 0, g: 0, b: 0, a: 0.9882353}
-  FadeInSpeed: 6
-  FadeOutSpeed: 6
-  SceneFadeInDelay: 1
+  FadeSpeed: 6
 --- !u!1 &5117709272727892639
 GameObject:
   m_ObjectHideFlags: 0
@@ -4372,7 +4370,6 @@ GameObject:
   - component: {fileID: 2981720430411257789}
   - component: {fileID: 1334413062160626248}
   - component: {fileID: 1416394701893124138}
-  - component: {fileID: 6179961375502454275}
   m_Layer: 9
   m_Name: PlayerController
   m_TagString: Player
@@ -4407,6 +4404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4688ae0e7d3f7c7498dd85852dfd2622, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectedLocomotion: 1
   MoveCharacterWithCamera: 1
   RotateCharacterWithCamera: 1
   TrackingSpace: {fileID: 5117709272728089495}
@@ -4419,6 +4417,8 @@ MonoBehaviour:
   DistanceFromGround: 0
   MinimumCapsuleHeight: 0.4
   MaximumCapsuleHeight: 3
+  ClimbingCapsuleHeight: 0.5
+  ClimbingCapsuleCenter: -0.25
   LastTeleportTime: 0
   CharacterControllerYOffset: -0.025
   CameraHeight: 0
@@ -4426,6 +4426,7 @@ MonoBehaviour:
   ElevateCameraHeight: 1.65
   MinElevation: -100
   MaxElevation: 5000
+  GrippingClimbable: 0
   LastPlayerMoveTime: 0
 --- !u!143 &9166498488697346858
 CharacterController:
@@ -4496,7 +4497,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 855d72b36bb9d904e80e3c9e587f3d8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TeleportLine: {fileID: 1247141268419097902}
   ValidTeleport: {r: 0.007843138, g: 0.83137256, b: 0.7294118, a: 1}
   InvalidTeleport: {r: 0.83137256, g: 0.007843156, b: 0.030413372, a: 1}
   HandSide: 0
@@ -4507,8 +4507,8 @@ MonoBehaviour:
   DirectionIndicator: {fileID: 4970065941414173402}
   MaxRange: 50
   SegmentCount: 200
-  SimulationVelocity: 500
-  SegmentScale: 0.5
+  simulationVelocity: 500
+  segmentScale: 0.1
   CollisionLayers:
     serializedVersion: 2
     m_Bits: 259
@@ -4521,6 +4521,7 @@ MonoBehaviour:
   FadeScreenOnTeleport: 1
   TeleportFadeSpeed: 10
   TeleportDelay: 0.2
+  TeleportLine: {fileID: 1247141268419097902}
 --- !u!114 &5883667856760302794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4669,27 +4670,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &6179961375502454275
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9166498488684277474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce69dd88838504c4c988eb0d63cad28a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LeftControllerTransform: {fileID: 5119220787211519073}
-  RightControllerTransform: {fileID: 5118943030497372719}
-  ClimbingCapsuleHeight: 0.5
-  ClimbingCapsuleCenter: -0.25
-  ApplyHapticsOnGrab: 1
-  VibrateFrequency: 0.3
-  VibrateAmplitude: 0.1
-  VibrateDuration: 0.1
-  GrippingClimbable: 0
 --- !u!1001 &3671052058624549672
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4763,15 +4743,15 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: bb512fe3350bcb8479ad97e466039877, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 95ce9f4c6f9d92a46b626a353c690dac, type: 3}
---- !u!4 &3671052058624948644 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400012, guid: 95ce9f4c6f9d92a46b626a353c690dac,
-    type: 3}
-  m_PrefabInstance: {fileID: 3671052058624549672}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3671052058624948636 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400052, guid: 95ce9f4c6f9d92a46b626a353c690dac,
+    type: 3}
+  m_PrefabInstance: {fileID: 3671052058624549672}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3671052058624948644 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400012, guid: 95ce9f4c6f9d92a46b626a353c690dac,
     type: 3}
   m_PrefabInstance: {fileID: 3671052058624549672}
   m_PrefabAsset: {fileID: 0}

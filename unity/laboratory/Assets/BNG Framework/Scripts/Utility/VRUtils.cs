@@ -10,18 +10,7 @@ namespace BNG {
     /// </summary>
     public class VRUtils : MonoBehaviour {
 
-        public static VRUtils Instance {
-            get {
-                if (_instance == null) {
-                    _instance = FindObjectOfType<VRUtils>();
-                    if (_instance == null) {
-                        _instance = new GameObject("VRUtils").AddComponent<VRUtils>();
-                    }
-                }
-                return _instance;
-            }
-        }
-        private static VRUtils _instance;
+        public static VRUtils Instance;
 
         // Where to put our text messages
         public Color DebugTextColor = Color.white;
@@ -32,12 +21,7 @@ namespace BNG {
         float MaxTextEntries = 10;
 
         void Awake() {
-            if (_instance != null && _instance != this) {
-                Destroy(this);
-                return;
-            }
-
-            _instance = this;
+            Instance = this;
         }                    
         
         /// <summary>

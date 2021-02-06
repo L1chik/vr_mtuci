@@ -157,7 +157,6 @@ namespace BNG {
             // Player Move Forward / Back, Snap Turn
             if(smoothLocomotion != null && smoothLocomotion.enabled == false) {
                 // Manually allow player movement if the smooth locomotion component is disabled
-                smoothLocomotion.CheckControllerReferences();
                 smoothLocomotion.UpdateInputs();
                 smoothLocomotion.MoveCharacter();
             }

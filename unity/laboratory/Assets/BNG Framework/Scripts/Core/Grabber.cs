@@ -12,14 +12,13 @@ namespace BNG {
     [RequireComponent(typeof(GrabbablesInTrigger))]
     public class Grabber : MonoBehaviour {
 
-        [Header("Hand Side")]
+        [Header("General")]
         /// <summary>
         /// Which controller side. None if not attached to a controller.
         /// </summary>
         [Tooltip("Which controller side. None if not attached to a controller.")]
         public ControllerHand HandSide = ControllerHand.Left;
 
-        [Header("Grab Settings")]
         /// <summary>
         /// Which controller side. None if not attached to a controller.
         /// </summary>
@@ -33,21 +32,18 @@ namespace BNG {
         [Tooltip("The default grab button for all Grabbables. A Grabbable can manually override this default.")]
         public GrabButton DefaultGrabButton = GrabButton.Grip;
 
-        [Header("Hold / Release")]
         /// <summary>
         /// 0-1 determine how much to consider a grip.
         /// Example : 0.75 is holding the grip down 3/4 of the way
         /// </summary>
-        [Tooltip("0-1 determine how much to consider a grip. Example : 0.75 is holding the grip down 3/4 of the way.")]
-        [Range(0.0f, 1f)]
+        [Tooltip("0-1 determine how much to consider a grip. Example : 0.75 is holding the grip down 3/4 of the way")]
         public float GripAmount = 0.9f;
 
         /// <summary>
         /// How much grip considered to release an ob ect (0-1)
         /// </summary>
-        [Tooltip("How much grip considered to release an object (0-1). Example : 0.75 is holding the grip down 3/4 of the way")]
-        [Range(0.0f, 1f)]
-        public float ReleaseGripAmount = 0.5f;
+        [Tooltip("How much grip considered to release an ob ect (0-1)")]
+        public float ReleaseGripAmount = 0.1f;
 
         /// <summary>
         /// How many seconds to check for grab input while Grip is held down. After grip is held down for this long, grip will need to be repressed in order to pick up an object.
@@ -56,7 +52,6 @@ namespace BNG {
         public float GrabCheckSeconds = 0.5f;
         float currentGrabTime;
 
-        [Header("Equip on Start")]
         /// <summary>
         /// Assign a Grabbable here if you want to auto equip it on Start
         /// </summary>
@@ -81,21 +76,6 @@ namespace BNG {
         [Tooltip("The Grabbable we are currently holding. Null if not holding anything.")]
         public Grabbable HeldGrabbable;
 
-        /// <summary>
-        /// Same as holding down grip if set to true. Should not have same value as ForceRelease.
-        /// </summary>
-        [Tooltip("Same as holding down grip if set to true. Should not have same value as ForceRelease.")]
-        public bool ForceGrab = false;
-
-        /// <summary>
-        /// Force the release of grip
-        /// </summary>
-        [Tooltip("Force the release of grip if set to true. Should not have same value as ForceGrab.")]
-        public bool ForceRelease = false;
-
-        [Tooltip("Time.time when we last dropped a Grabbable")]
-        public float LastDropTime;
-
         Grabbable previousClosest;
         Grabbable previousClosestRemote;
 
@@ -106,6 +86,9 @@ namespace BNG {
         {
             get { return HeldGrabbable != null; }
         }
+
+        // Time.time when we last dropped a Grabbable
+        public float LastDropTime;
 
         /// <summary>
         /// Are we currently pulling a remote grabbable towards us?
@@ -118,11 +101,6 @@ namespace BNG {
         /// Keep track of all grabbables in trigger
         /// </summary>
         GrabbablesInTrigger grabsInTrigger;
-        public GrabbablesInTrigger GrabsInTrigger {
-            get {
-                return grabsInTrigger;
-            }
-        }
 
         // Object flying at our hand
         Grabbable flyingGrabbable;
@@ -131,7 +109,19 @@ namespace BNG {
 
         // Offset Hand Models are from Grabber
         public Vector3 handsGraphicsGrabberOffset { get; private set; }
-        public Vector3 handsGraphicsGrabberOffsetRotation { get; private set; }                
+        public Vector3 handsGraphicsGrabberOffsetRotation { get; private set; }        
+
+        /// <summary>
+        /// Same as holding down grip if set to true. Should not have same value as ForceRelease.
+        /// </summary>
+        [HideInInspector]
+        public bool ForceGrab = false;
+
+        /// <summary>
+        /// Force the release of grip
+        /// </summary>
+        [HideInInspector]
+        public bool ForceRelease = false;
 
         [HideInInspector]
         public Vector3 PreviousPosition;
@@ -155,7 +145,6 @@ namespace BNG {
         public GrabbableEvent onReleaseEvent;
 
         // For tracking velocity
-        [HideInInspector]
         public VelocityTracker velocityTracker;
 
         void Start() {
@@ -230,7 +219,7 @@ namespace BNG {
             checkGrabbableEvents();
 
             // Check for input to grab or release item
-            if ((HoldingItem == false && InputCheckGrab()) || ForceGrab) {
+            if ((inputCheckGrab() && !HoldingItem) || ForceGrab) {
                 TryGrab();               
             }
             else if(((HoldingItem || RemoteGrabbingItem) && inputCheckRelease()) || ForceRelease) {                
@@ -336,39 +325,34 @@ namespace BNG {
         }
 
         // See if we are inputting controls to grab an item
-        public virtual bool InputCheckGrab() {
+        protected virtual bool inputCheckGrab() {
+
+            // Can only hold one grabbable at a time
+            if(HeldGrabbable != null) {
+                return false;
+            }
 
             // Nothing nearby to grab
             Grabbable closest = getClosestOrRemote();
-
-            return GetInputDownForGrabbable(closest);           
-        }
-
-        public virtual bool GetInputDownForGrabbable(Grabbable grabObject) {
-
-            if(grabObject == null) {
+            if (closest == null) {
                 return false;
             }
 
             // Check Hold Controls
-            HoldType closestHoldType = getHoldType(grabObject);
-            GrabButton closestGrabButton = GetGrabButton(grabObject);
+            HoldType closestHoldType = getHoldType(closest);
+            GrabButton closestGrabButton = GetGrabButton(closest);
 
             // Hold to grab controls
             if (closestHoldType == HoldType.HoldDown) {
                 bool grabInput = getGrabInput(closestGrabButton) >= GripAmount;
 
-                if (closestGrabButton == GrabButton.Grip && !FreshGrip) {
+                if(closestGrabButton == GrabButton.Grip && !FreshGrip) {
                     return false;
                 }
 
-                //if(HandSide == ControllerHand.Left && InputBridge.Instance.LeftTrigger > 0.9f) {
-                //    Debug.Log("Trigger Down");
-                //}
-
                 return grabInput;
             }
-            // Check Toggle Controls
+            // Toggle controls
             else if (closestHoldType == HoldType.Toggle) {
                 return getToggleInput(closestGrabButton);
             }

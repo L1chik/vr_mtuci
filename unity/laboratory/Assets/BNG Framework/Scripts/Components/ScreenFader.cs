@@ -15,12 +15,7 @@ namespace BNG {
         public Color FadeColor = Color.black;
 
         [Tooltip("How fast to fade in / out")]
-        public float FadeInSpeed = 6f;
-
-        public float FadeOutSpeed = 6f;
-
-        [Tooltip("Wait X seconds before fading scene in")]
-        public float SceneFadeInDelay = 1f;
+        public float FadeSpeed = 6f;
 
         GameObject fadeObject;
         RectTransform fadeObjectRect;
@@ -29,30 +24,18 @@ namespace BNG {
         Image fadeImage;
         IEnumerator fadeRoutine;
 
-        void Awake() {
-            initialize();
-        }
-
         protected virtual void initialize() {
             // Create a Canvas that will be placed directly over the camera
-            if (fadeObject == null) {
-                Canvas childCanvas = GetComponentInChildren<Canvas>();
-
-                if (childCanvas != null) {
-                    GameObject.Destroy(this.gameObject);
-                    return;
-                }
+            if(fadeObject == null) {
                 fadeObject = new GameObject();
                 fadeObject.transform.parent = Camera.main.transform;
-                fadeObject.transform.localPosition = new Vector3(0, 0, 0.03f);
-                fadeObject.transform.localEulerAngles = Vector3.zero;
+                fadeObject.transform.localPosition = new Vector3(0, 0, 0.011f);
                 fadeObject.transform.name = "ScreenFader";
 
                 fadeCanvas = fadeObject.AddComponent<Canvas>();
                 fadeCanvas.renderMode = RenderMode.WorldSpace;
 
                 canvasGroup = fadeObject.AddComponent<CanvasGroup>();
-                canvasGroup.interactable = false;
 
                 fadeImage = fadeObject.AddComponent<Image>();
                 fadeImage.color = FadeColor;
@@ -63,9 +46,7 @@ namespace BNG {
                 fadeObjectRect.anchorMin = new Vector2(1, 0);
                 fadeObjectRect.anchorMax = new Vector2(0, 1);
                 fadeObjectRect.pivot = new Vector2(0.5f, 0.5f);
-                fadeObjectRect.sizeDelta = new Vector2(0.2f, 0.2f);
-                fadeObjectRect.localScale = new Vector2(2f, 2f);
-
+                fadeObjectRect.sizeDelta = new Vector2(0.1f, 0.1f);
             }
         }
 
@@ -78,19 +59,13 @@ namespace BNG {
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+            initialize();
 
-            if (FadeOnSceneLoaded && fadeObject != null) {
+            if (FadeOnSceneLoaded) {
                 // Start screen at fade
                 updateImageAlpha(FadeColor.a);
-
-                StartCoroutine(fadeOutWithDelay(SceneFadeInDelay));
+                DoFadeOut();
             }
-        }
-
-        IEnumerator fadeOutWithDelay(float delaySeconds) {
-            yield return new WaitForSeconds(delaySeconds);
-
-            DoFadeOut();
         }
 
         /// <summary>
@@ -99,12 +74,12 @@ namespace BNG {
         public virtual void DoFadeIn() {
 
             // Stop if currently running
-            if (fadeRoutine != null) {
+            if(fadeRoutine != null) {
                 StopCoroutine(fadeRoutine);
             }
 
             // Do the fade routine
-            if (canvasGroup != null) {
+            if(canvasGroup != null) {
                 fadeRoutine = doFade(canvasGroup.alpha, 1);
                 StartCoroutine(fadeRoutine);
             }
@@ -125,11 +100,10 @@ namespace BNG {
         public virtual void SetFadeLevel(float fadeLevel) {
             if (fadeRoutine != null) {
                 StopCoroutine(fadeRoutine);
-                Debug.Log("----- Stopped Routine");
             }
 
             // No Canvas available to fade
-            if (canvasGroup == null) {
+            if(canvasGroup == null) {
                 return;
             }
 
@@ -145,14 +119,14 @@ namespace BNG {
 
             while (alpha != alphaTo) {
 
-                if (alphaFrom < alphaTo) {
-                    alpha += Time.deltaTime * FadeInSpeed;
-                    if (alpha > alphaTo) {
+                if(alphaFrom < alphaTo) {
+                    alpha += Time.deltaTime * FadeSpeed;
+                    if(alpha > alphaTo) {
                         alpha = alphaTo;
                     }
                 }
                 else {
-                    alpha -= Time.deltaTime * FadeOutSpeed;
+                    alpha -= Time.deltaTime * FadeSpeed;
                     if (alpha < alphaTo) {
                         alpha = alphaTo;
                     }
@@ -164,20 +138,17 @@ namespace BNG {
             }
 
             yield return new WaitForEndOfFrame();
-
-            // Ensure alpha is always applied
-            updateImageAlpha(alphaTo);
         }
 
         protected virtual void updateImageAlpha(float alphaValue) {
 
             // Canvas Group was Destroyed.
-            if (canvasGroup == null) {
+            if(canvasGroup == null) {
                 return;
             }
 
             // Enable canvas if necessary
-            if (!canvasGroup.gameObject.activeSelf) {
+            if(!canvasGroup.gameObject.activeSelf) {
                 canvasGroup.gameObject.SetActive(true);
             }
 

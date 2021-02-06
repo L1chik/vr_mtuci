@@ -6,9 +6,7 @@ using UnityEngine;
 #if UNITY_2018_4_OR_NEWER
 using UnityEngine.XR;
 #endif
-#if STEAM_VR_SDK
 using Valve.VR;
-#endif
 
 namespace BNG {
 
@@ -48,8 +46,6 @@ namespace BNG {
         BackButton,
         BackButtonDown
     }
-
-    
 
     /// <summary>
     /// Controller Options available to bind buttons to via Inspector. Input is relative to the controller holding it.
@@ -165,9 +161,6 @@ namespace BNG {
         public bool RightGripDown = false;
 
         [Header("Trigger")]
-        /// <summary>
-        /// How far Left Trigger is Held down. Values : 0 - 1 (Fully Open / Closed)
-        /// </summary>
         public float LeftTrigger = 0;
         public bool LeftTriggerNear = false;
         public bool LeftTriggerUp = false;
@@ -512,8 +505,6 @@ namespace BNG {
                 RightTriggerDown = prevVal < _downThreshold && RightTrigger >= _downThreshold;
 
                 // While OculusUsages.indexTouch is recommended, only CommonUsages.indexTouch is currently providing proper values
-#pragma warning disable 0618
-
                 LeftTriggerNear = getFeatureUsage(primaryLeftController, CommonUsages.indexTouch) > 0;
                 LeftThumbNear = getFeatureUsage(primaryLeftController, CommonUsages.thumbTouch) > 0;
 
@@ -527,7 +518,6 @@ namespace BNG {
                 RightTriggerNear = getFeatureUsage(primaryRightController, CommonUsages.indexTouch) > 0;
                 RightThumbNear = getFeatureUsage(primaryRightController, CommonUsages.thumbTouch) > 0;
 
-#pragma warning restore 0618
                 prevBool = AButton;
                 AButton = getFeatureUsage(primaryRightController, CommonUsages.primaryButton);
                 AButtonDown = prevBool == false && AButton == true;
@@ -565,15 +555,20 @@ namespace BNG {
             OnInputsUpdated?.Invoke();
         }
 
-        public virtual void UpdateSteamInput() {
-#if STEAM_VR_SDK
+       public virtual void UpdateSteamInput() {
 
             LeftThumbstickAxis = ApplyDeadZones(SteamVR_Actions.vRIF_LeftThumbstickAxis.axis, ThumbstickDeadzoneX, ThumbstickDeadzoneY);
             RightThumbstickAxis = ApplyDeadZones(SteamVR_Actions.vRIF_RightThumbstickAxis.axis, ThumbstickDeadzoneX, ThumbstickDeadzoneY);
+
+            var prevBool = LeftThumbstick;
             LeftThumbstick = SteamVR_Actions.vRIF_LeftThumbstickDown.state;
-            LeftThumbstickDown = SteamVR_Actions.vRIF_LeftThumbstickDown.stateDown;
+            LeftThumbstickDown = prevBool == false && LeftThumbstick == true;
+            LeftThumbstickUp = prevBool == true && LeftThumbstick == false;
+
+            prevBool = RightThumbstick;
             RightThumbstick = SteamVR_Actions.vRIF_RightThumbstickDown.state;
-            RightThumbstickDown = SteamVR_Actions.vRIF_RightThumbstickDown.stateDown;
+            RightThumbstickDown = prevBool == false && RightThumbstick == true;
+            RightThumbstickUp = prevBool == true && RightThumbstick == false;
             
             LeftThumbNear = SteamVR_Actions.vRIF_LeftThumbstickNear.state;
             RightThumbNear = SteamVR_Actions.vRIF_RightThumbstickNear.state;
@@ -585,9 +580,16 @@ namespace BNG {
             prevVal = RightGrip;
             RightGrip = correctValue(SteamVR_Actions.vRIF_RightGrip.axis);
             RightGripDown = prevVal < _downThreshold && RightGrip >= _downThreshold;
-            
+
+            prevVal = LeftTrigger;
             LeftTrigger = correctValue(SteamVR_Actions.vRIF_LeftTrigger.axis);
+            LeftTriggerDown = prevVal < _downThreshold && LeftTrigger >= _downThreshold;
+            LeftTriggerUp = prevVal >= _downThreshold && LeftTrigger == 0;
+
+            prevVal = RightTrigger;
             RightTrigger = correctValue(SteamVR_Actions.vRIF_RightTrigger.axis);
+            RightTriggerDown = prevVal < _downThreshold && RightTrigger >= _downThreshold;
+            RightTriggerUp = prevVal >= _downThreshold && RightTrigger == 0;
 
             AButton = SteamVR_Actions.vRIF_AButton.state;
             AButtonDown = SteamVR_Actions.vRIF_AButton.stateDown;
@@ -601,7 +603,15 @@ namespace BNG {
             YButton = SteamVR_Actions.vRIF_YButton.state;
             YButtonDown = SteamVR_Actions.vRIF_YButton.stateDown;
             YButtonUp = SteamVR_Actions.vRIF_YButton.stateUp;
-#endif
+
+            prevBool = StartButton;
+            StartButton = SteamVR_Actions.vRIF_Start.state;
+            StartButtonDown = prevBool == false && StartButton == true;
+
+            prevBool = BackButton;
+            BackButton = SteamVR_Actions.vRIF_Back.state;
+            BackButtonDown = prevBool == false && BackButton == true;
+
         }
 
         public virtual void UpdatePicoInput() {
@@ -677,10 +687,6 @@ namespace BNG {
             return (float)System.Math.Round(inputValue * 1000f) / 1000f;
         }
 
-
-        /// <summary>
-        /// Returns true if the given binding is pressed
-        /// </summary>
         public bool GetControllerBindingValue(ControllerBinding val) {
             if (val == ControllerBinding.AButton && AButton) { return true; }
             if (val == ControllerBinding.AButtonDown && AButtonDown) { return true; }

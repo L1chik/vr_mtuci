@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -153,31 +152,12 @@ namespace BNG {
 
             EditorGUILayout.PropertyField(GrabPoints);
 
-            // Grab Point Button
-            if(GUILayout.Button("Auto Populate Grab Points")) {
-                AutoPopulateGrabPoints();
-            }
-
             // Only show Debug Fields when playing in editor
-            if (Application.isPlaying) {
+            if(Application.isPlaying) {
                 EditorGUILayout.PropertyField(collisions);
             }
             
             serializedObject.ApplyModifiedProperties();
-        }
-
-        public void AutoPopulateGrabPoints() {
-            if(grabbable) {
-                var newPoints = new List<Transform>();
-
-                foreach(var gp in grabbable.GetComponentsInChildren<GrabPoint>()) {
-                    if(gp != null && gp.gameObject.activeInHierarchy) {
-                        newPoints.Add(gp.transform);
-                    }
-                }
-
-                grabbable.GrabPoints = newPoints;
-            }
         }
 
         //[MenuItem("GameObject/VRIF/Grabbable")]

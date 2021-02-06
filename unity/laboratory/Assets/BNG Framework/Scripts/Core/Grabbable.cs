@@ -29,7 +29,7 @@ namespace BNG {
     /// </summary>
     public class Grabbable : MonoBehaviour {
 
-        // [HideInInspector]
+        [HideInInspector]
         public bool BeingHeld = false;
         List<Grabber> validGrabbers;
 
@@ -38,24 +38,18 @@ namespace BNG {
         /// </summary>        
         protected List<Grabber> heldByGrabbers;
 
-        public List<Grabber> HeldByGrabbers {
-            get {
-                return heldByGrabbers;
-            }
-        }
-
         /// <summary>
         /// Save whether or not the RigidBody was kinematic on Start.
         /// </summary>
-        protected bool wasKinematic;
-        protected bool usedGravity;
-        protected CollisionDetectionMode initialCollisionMode;
-        protected RigidbodyInterpolation initialInterpolationMode;
+        bool wasKinematic;
+        bool usedGravity;
+        CollisionDetectionMode initialCollisionMode;
+        RigidbodyInterpolation initialInterpolationMode;
 
         /// <summary>
         /// Is the object being pulled towards the Grabber
         /// </summary>
-        protected bool remoteGrabbing;
+        bool remoteGrabbing;
 
 
         [Header("Grab Settings")]
@@ -74,20 +68,20 @@ namespace BNG {
         /// <summary>
         /// Kinematic Physics locks the object in place on the hand / grabber. PhysicsJoint allows collisions with the environment.
         /// </summary>
-        [Tooltip("Kinematic Physics locks the object in place on the hand / grabber. Physics Joint and Velocity types allow collisions with the environment.")]
-        public GrabPhysics GrabPhysics = GrabPhysics.Velocity;
+        [Tooltip("Kinematic Physics locks the object in place on the hand / grabber. Physics Joint allows collisions with the environment.")]
+        public GrabPhysics GrabPhysics = GrabPhysics.PhysicsJoint;
 
         /// <summary>
         /// Snap to a location or grab anywhere on the object
         /// </summary>
         [Tooltip("Snap to a location or grab anywhere on the object")]
-        public GrabType GrabMechanic = GrabType.Precise;
+        public GrabType GrabMechanic = GrabType.Snap;
 
         /// <summary>
         /// How fast to Lerp the object to the hand
         /// </summary>
         [Tooltip("How fast to Lerp the object to the hand")]
-        public float GrabSpeed = 15f;
+        public float GrabSpeed = 7.5f;
 
         /// <summary>
         /// Can the object be picked up from far away. Must be within RemoteGrabber Trigger
@@ -139,7 +133,7 @@ namespace BNG {
         /// If true, the hand model will be attached to the grabbed object
         /// </summary>
         [Tooltip("If true, the hand model will be attached to the grabbed object. This separates it from a 1:1 match with the controller, but may look more realistic.")]
-        public bool ParentHandModel = true;
+        public bool ParentHandModel = false;
 
         [Tooltip("If true, the hand model will snap to the nearest GrabPoint. Otherwise the hand model will stay with the Grabber.")]
         public bool SnapHandModel = true;
@@ -166,7 +160,7 @@ namespace BNG {
         [Header("Default Hand Pose")]
         [Tooltip("This HandPose Id will be passed to the Hand Animator when equipped. You can add new hand poses in the HandPoseDefinitions.cs file.")]
         public HandPoseId CustomHandPose = HandPoseId.Default;
-        protected HandPoseId initialHandPoseId;
+        HandPoseId initialHandPoseId;
 
         /// <summary>
         /// What to do if another grabber grabs this while equipped. DualGrab is currently unsupported.
@@ -258,23 +252,23 @@ namespace BNG {
         // Keep track of objects that are colliding with us
         [Header("Shown for Debug : ")]
         [SerializeField]
-        protected List<Collider> collisions;
+        List<Collider> collisions;
 
         // Last time in seconds (Time.time) since we had a valid collision
-        protected float lastCollisionSeconds;
+        float lastCollisionSeconds;
 
         /// <summary>
         /// How many seconds we've gone without collisions
         /// </summary>
-        protected float lastNoCollisionSeconds;
+        float lastNoCollisionSeconds;
 
         // If Time.time < requestSpringTime, force joint to be springy
-        protected float requestSpringTime;
+        float requestSpringTime;
 
         /// <summary>
         /// If Grab Mechanic is set to Snap, set position and rotation to this Transform on the primary Grabber
         /// </summary>
-        protected Transform primaryGrabOffset;
+        Transform primaryGrabOffset;
 
         /// <summary>
         /// Returns the active GrabPoint component if object is held and a GrabPoint has been assigneed
@@ -369,12 +363,12 @@ namespace BNG {
         }
         private bool _canBeMoved;
 
-        protected Transform originalParent;
-        protected InputBridge input;
-        protected ConfigurableJoint connectedJoint;
-        protected Vector3 previousPosition;
-        protected float lastItemTeleportTime;
-        protected bool recentlyTeleported;
+        Transform originalParent;
+        InputBridge input;
+        ConfigurableJoint connectedJoint;
+        Vector3 previousPosition;
+        float lastItemTeleportTime;
+        bool recentlyTeleported;
 
         /// <summary>
         /// Set this to false if you need to see Debug field or don't want to use the custom inspector
@@ -391,9 +385,9 @@ namespace BNG {
             }
         }
         private BNGPlayerController _player;
-        protected Collider col;
-        protected Rigidbody rigid;
-        protected Grabber flyingTo;
+        Collider col;
+        Rigidbody rigid;
+        Grabber flyingTo;
 
         protected List<GrabbableEvents> events;
 
@@ -402,7 +396,7 @@ namespace BNG {
                 return didParentHands;
             }
         }
-        protected bool didParentHands = false;
+        bool didParentHands = false;
 
         void Awake() {
             col = GetComponent<Collider>();
@@ -444,7 +438,7 @@ namespace BNG {
             _canBeMoved = canBeMoved();
         }
 
-        public virtual void Update() {
+        void Update() {
 
             if (remoteGrabbing) {
                 Vector3 grabbablePosition = transform.position;
@@ -458,10 +452,6 @@ namespace BNG {
                 if (dist <= 0.002f) {
                     movePosition(grabberPosition);
                     moveRotation(grabTransform.rotation);
-
-                    if(rigid) {
-                        rigid.velocity = Vector3.zero;
-                    }
 
                     if (flyingTo != null) {
                         flyingTo.GrabGrabbable(this);
@@ -543,7 +533,7 @@ namespace BNG {
         }
 
 
-        public virtual void FixedUpdate() {
+        void FixedUpdate() {
             if (BeingHeld) {
 
                 // Reset all collisions every physics update
@@ -569,7 +559,7 @@ namespace BNG {
             }
         }
 
-        protected Vector3 getGrabberWithOffsetWorldPosition(Grabber grabber) {
+        Vector3 getGrabberWithOffsetWorldPosition(Grabber grabber) {
             Vector3 grabberPosition = grabber.transform.position;
 
             // If there is a GrabPoint then we should offset the destination
@@ -582,7 +572,7 @@ namespace BNG {
             return grabberPosition;
         }
 
-        protected void positionHandGraphics() {
+        void positionHandGraphics() {
 
             if (ParentHandModel && didParentHands) {
                 if (GrabMechanic == GrabType.Snap) {
@@ -619,7 +609,7 @@ namespace BNG {
 
         public virtual void UpdateFixedJoints() {
             // Set to continuous dynamic while being held
-            if (rigid != null && rigid.isKinematic) {
+            if (rigid.isKinematic) {
                 rigid.collisionDetectionMode = CollisionDetectionMode.Discrete;
             }
 
@@ -641,7 +631,7 @@ namespace BNG {
         public virtual void UpdatePhysicsJoints() {
 
             // Bail if no joint connected
-            if (connectedJoint == null || rigid == null) {
+            if (connectedJoint == null) {
                 return;
             }
 
@@ -751,11 +741,6 @@ namespace BNG {
         }
 
         void setPositionSpring(float spring, float damper) {
-
-            if(connectedJoint == null) {
-                return;
-            }
-
             JointDrive xDrive = connectedJoint.xDrive;
             xDrive.positionSpring = spring;
             xDrive.positionDamper = damper;
@@ -773,12 +758,10 @@ namespace BNG {
         }
 
         void setSlerpDrive(float slerp, float damper) {
-            if(connectedJoint) {
-                JointDrive slerpDrive = connectedJoint.slerpDrive;
-                slerpDrive.positionSpring = slerp;
-                slerpDrive.positionDamper = damper;
-                connectedJoint.slerpDrive = slerpDrive;
-            }
+            JointDrive slerpDrive = connectedJoint.slerpDrive;
+            slerpDrive.positionSpring = slerp;
+            slerpDrive.positionDamper = damper;
+            connectedJoint.slerpDrive = slerpDrive;
         }
 
         /// <summary>
@@ -795,10 +778,7 @@ namespace BNG {
             }
 
             // Move towards hand using velocity
-
-            if (rigid) {
-                rigid.velocity = Vector3.MoveTowards(rigid.velocity, (positionDelta * MoveVelocityForce) * Time.deltaTime, 1f);
-            }
+            rigid.velocity = Vector3.MoveTowards(rigid.velocity, (positionDelta * MoveVelocityForce) * Time.deltaTime, 1f);
         }
 
         void rotateWithVelocity() {
@@ -868,14 +848,12 @@ namespace BNG {
         public virtual void UpdateVelocityPhysics() {
 
             // Make sure rotation is always free
-            if(connectedJoint != null) {
-                connectedJoint.xMotion = ConfigurableJointMotion.Free;
-                connectedJoint.yMotion = ConfigurableJointMotion.Free;
-                connectedJoint.zMotion = ConfigurableJointMotion.Free;
-                connectedJoint.angularXMotion = ConfigurableJointMotion.Free;
-                connectedJoint.angularYMotion = ConfigurableJointMotion.Free;
-                connectedJoint.angularZMotion = ConfigurableJointMotion.Free;
-            }
+            connectedJoint.xMotion = ConfigurableJointMotion.Free;
+            connectedJoint.yMotion = ConfigurableJointMotion.Free;
+            connectedJoint.zMotion = ConfigurableJointMotion.Free;
+            connectedJoint.angularXMotion = ConfigurableJointMotion.Free;
+            connectedJoint.angularYMotion = ConfigurableJointMotion.Free;
+            connectedJoint.angularZMotion = ConfigurableJointMotion.Free;
 
             // Make sure linear spring is off
             // Set X,Y, and Z drive to our values
@@ -937,21 +915,12 @@ namespace BNG {
                     else {
                         // Can't be moved so go ahead and snap
                         if (grabTransform != null && distance < 0.1f) {
-
-                            Debug.Log("Moved Hand Model" + transform.name);
-
                             // Snap position
                             parentHandGraphics(g);
                             positionHandGraphics();
 
-                            // positionHandGraphics();
-                            if (g.HandsGraphics != null) {
-                                g.HandsGraphics.localEulerAngles = Vector3.zero;
-                                g.HandsGraphics.localPosition = g.handsGraphicsGrabberOffset;
-                            }
-                        }
-                        else {
-                            Debug.Log("Did not move Hand Model " + transform.name);
+                            g.HandsGraphics.localEulerAngles = Vector3.zero;
+                            g.HandsGraphics.localPosition = g.handsGraphicsGrabberOffset;
                         }
                     }
                 }
@@ -960,11 +929,6 @@ namespace BNG {
 
         // Can this object be moved towards an object, or is it fixed in place / attached to something else
         bool canBeMoved() {
-
-            if (GetComponent<Rigidbody>() == null) {
-                return false;
-            }
-
             if (GetComponent<Joint>() != null) {
                 return false;
             }
@@ -1041,10 +1005,10 @@ namespace BNG {
                 Transform grabberTransform = heldBy.transform;
 
                 if (lerp) {
-                    grabberTransform.localRotation = Quaternion.Slerp(grabberTransform.localRotation, Quaternion.Inverse(Quaternion.Euler(GrabRotationOffset)), Time.deltaTime * 20);
+                    grabberTransform.localEulerAngles = angleLerp(grabberTransform.localEulerAngles, -GrabRotationOffset, Time.deltaTime * 20);
                 }
                 else {
-                    grabberTransform.localRotation = Quaternion.Inverse(Quaternion.Euler(GrabRotationOffset));
+                    grabberTransform.localEulerAngles = -GrabRotationOffset;
                 }
             }
         }
@@ -1303,7 +1267,7 @@ namespace BNG {
 
             removeGrabber(droppedBy);
 
-            BeingHeld = heldByGrabbers != null && heldByGrabbers.Count > 0;
+            BeingHeld = false;
             didParentHands = false;
             LastDropTime = Time.time;
             CustomHandPose = initialHandPoseId;
@@ -1315,9 +1279,17 @@ namespace BNG {
                 Vector3 angularVelocity = droppedBy.GetGrabberAveragedAngularVelocity() + droppedBy.GetComponent<Rigidbody>().angularVelocity;
 
                 if (gameObject.activeSelf) {
-                    Release(velocity, angularVelocity);
+                    StartCoroutine(Release(velocity, angularVelocity));
                 }
             }
+        }
+
+        Vector3 angleLerp(Vector3 startAngle, Vector3 finishAngle, float t) {
+            float xLerp = Mathf.LerpAngle(startAngle.x, finishAngle.x, t);
+            float yLerp = Mathf.LerpAngle(startAngle.y, finishAngle.y, t);
+            float zLerp = Mathf.LerpAngle(startAngle.z, finishAngle.z, t);
+            Vector3 Lerped = new Vector3(xLerp, yLerp, zLerp);
+            return Lerped;
         }
 
         void clearLookAtTransform() {
@@ -1524,20 +1496,21 @@ namespace BNG {
             return grabPoint;
         }
 
-        /// <summary>
-        /// Throw the object by applying velocity
-        /// </summary>
-        /// <param name="velocity">How much velocity to apply to the grabbable. Multiplied by ThrowForceMultiplier</param>
-        /// <param name="angularVelocity">How much angular velocity to apply to the grabbable.</param>
-        public virtual void Release(Vector3 velocity, Vector3 angularVelocity) {
+        IEnumerator Release (Vector3 velocity, Vector3 angularVelocity) {
+
             Vector3 releaseVelocity = velocity * ThrowForceMultiplier;
 
             // Make sure this is a valid velocity
-            if (float.IsInfinity(releaseVelocity.x) || float.IsNaN(releaseVelocity.x)) {
-                return;
+            if(float.IsInfinity(releaseVelocity.x) || float.IsNaN(releaseVelocity.x)) {
+                yield break;
             }
-
+            
             // It isn't strictly necessary to update the velocity twice, but I've found this gives slightly more responsive feeling throws
+            rigid.velocity = releaseVelocity;
+            rigid.angularVelocity = angularVelocity;
+
+            yield return new WaitForFixedUpdate();
+
             rigid.velocity = releaseVelocity;
             rigid.angularVelocity = angularVelocity;
         }
@@ -1570,7 +1543,7 @@ namespace BNG {
             return true;
         }
 
-        public virtual void parentHandGraphics(Grabber g) {
+        void parentHandGraphics(Grabber g) {
             if (g.HandsGraphics != null) {
                 // Set to specified Grab Transform
                 if(primaryGrabOffset != null) {
@@ -1658,7 +1631,7 @@ namespace BNG {
             }
         }
 
-        protected Vector3 getRemotePosition(Grabber toGrabber) {
+        Vector3 getRemotePosition(Grabber toGrabber) {
 
             if (toGrabber != null) {
                 Transform pointPosition = GetClosestGrabPoint(toGrabber);
@@ -1681,7 +1654,7 @@ namespace BNG {
             return grabTransform.position;
         }
 
-        protected Quaternion getRemoteRotation(Grabber grabber) {
+        Quaternion getRemoteRotation(Grabber grabber) {
 
             if (grabber != null) {
                 Transform point = GetClosestGrabPoint(grabber);
@@ -1756,6 +1729,8 @@ namespace BNG {
                 validGrabbers.Remove(grabber);
             }
         }
+
+        
 
         /// <summary>
         /// You can comment this function out if you don't need precise contacts. Otherwise this is necessary to check for world collisions while being held

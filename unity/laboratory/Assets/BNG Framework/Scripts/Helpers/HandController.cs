@@ -200,10 +200,6 @@ namespace BNG {
 
                     if (grabber.HeldGrabbable.ActiveGrabPoint != null) {
 
-                        // Default Grip to 1 when holding an item
-                        HandAnimator.SetLayerWeight(0, 1);
-                        HandAnimator.SetFloat("Flex", 1);
-
                         // Get the Min / Max of our finger blends if set by the user
                         // This allows a pose to blend between states
                         // Index Finger

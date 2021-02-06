@@ -38,7 +38,7 @@ namespace BNG {
         void LateUpdate() {
 
             // Apply Gravity to Character Controller
-            if (GravityEnabled && characterController != null && characterController.enabled) {
+            if (GravityEnabled && characterController != null) {
                 _movementY += Gravity.y * Time.deltaTime;
                 characterController.Move(new Vector3(0, _movementY, 0) * Time.deltaTime);
 

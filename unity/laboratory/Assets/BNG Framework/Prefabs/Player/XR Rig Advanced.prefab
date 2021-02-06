@@ -1094,7 +1094,7 @@ Transform:
   - {fileID: 1802258148159122194}
   - {fileID: 3785795956800347940}
   - {fileID: 9109707806486641334}
-  - {fileID: 2654776571735855009}
+  - {fileID: 7955914143595822813}
   m_Father: {fileID: 8516297022724069044}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1130,7 +1130,6 @@ MonoBehaviour:
   HandVelocity: 1500
   DisableHandCollidersOnGrab: 0
   ParentToAttachPoint: 1
-  SnapBackDistance: 1
   ThisGrabber: {fileID: 3218240453531958521}
   DisableGrabber: {fileID: 8516297022294291282}
   ThisRemoteGrabber: {fileID: 4306185922907144754}
@@ -11849,14 +11848,14 @@ MonoBehaviour:
   DefaultHoldType: 0
   DefaultGrabButton: 0
   GripAmount: 0.9
-  ReleaseGripAmount: 0.5
-  GrabCheckSeconds: 0.5
+  ReleaseGripAmount: 0.1
+  GrabCheckSeconds: 1
   EquipGrabbableOnStart: {fileID: 0}
   HandsGraphics: {fileID: 1441517082044591477}
   HeldGrabbable: {fileID: 0}
+  LastDropTime: 0
   ForceGrab: 0
   ForceRelease: 0
-  LastDropTime: 0
   PreviousPosition: {x: 0, y: 0, z: 0}
   DummyTransform: {fileID: 0}
   FreshGrip: 1
@@ -12346,37 +12345,6 @@ Transform:
   - {fileID: 4423741862138062742}
   m_Father: {fileID: 4424880520758311745}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1647276006171238278
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4954435429063333672}
-  m_Layer: 0
-  m_Name: GhostHandHolder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4954435429063333672
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1647276006171238278}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 5853020178544119112}
-  m_Father: {fileID: 3384273866894783566}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1649021671937793282
 GameObject:
@@ -16550,7 +16518,6 @@ GameObject:
   - component: {fileID: 8123834767609328093}
   - component: {fileID: 8183438871837410239}
   - component: {fileID: 5959677274440945754}
-  - component: {fileID: 699835362}
   m_Layer: 9
   m_Name: PlayerController
   m_TagString: Player
@@ -16585,6 +16552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4688ae0e7d3f7c7498dd85852dfd2622, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectedLocomotion: 1
   MoveCharacterWithCamera: 1
   RotateCharacterWithCamera: 1
   TrackingSpace: {fileID: 2683195716759056386}
@@ -16597,6 +16565,8 @@ MonoBehaviour:
   DistanceFromGround: 0
   MinimumCapsuleHeight: 0.4
   MaximumCapsuleHeight: 3
+  ClimbingCapsuleHeight: 0.5
+  ClimbingCapsuleCenter: -0.25
   LastTeleportTime: 0
   CharacterControllerYOffset: -0.025
   CameraHeight: 0
@@ -16604,6 +16574,7 @@ MonoBehaviour:
   ElevateCameraHeight: 1.65
   MinElevation: -100
   MaxElevation: 5000
+  GrippingClimbable: 0
   LastPlayerMoveTime: 0
 --- !u!143 &2093207351243708607
 CharacterController:
@@ -16646,7 +16617,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2093207351254691191}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97dc4c75aa9c7ac4496efd08a068c08c, type: 3}
   m_Name: 
@@ -16674,7 +16645,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 855d72b36bb9d904e80e3c9e587f3d8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TeleportLine: {fileID: 8320362178837378747}
   ValidTeleport: {r: 0.007843138, g: 0.83137256, b: 0.7294118, a: 1}
   InvalidTeleport: {r: 0.83137256, g: 0.007843156, b: 0.030413372, a: 1}
   HandSide: 0
@@ -16685,8 +16655,8 @@ MonoBehaviour:
   DirectionIndicator: {fileID: 2792330269425244495}
   MaxRange: 50
   SegmentCount: 200
-  SimulationVelocity: 500
-  SegmentScale: 0.5
+  simulationVelocity: 500
+  segmentScale: 0.1
   CollisionLayers:
     serializedVersion: 2
     m_Bits: 259
@@ -16699,6 +16669,7 @@ MonoBehaviour:
   FadeScreenOnTeleport: 1
   TeleportFadeSpeed: 10
   TeleportDelay: 0.2
+  TeleportLine: {fileID: 8320362178837378747}
 --- !u!114 &3719865058671406943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16860,32 +16831,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DefaultHandsModel: 0
-  LoadHandSelectionFromPrefs: 0
-  ToggleHandsInput: 20
+  LoadHandSelectionFromPrefs: 1
+  RightThumbstickToggleHands: 1
   LeftHandGFXHolder: {fileID: 5629437628528558491}
   RightHandGFXHolder: {fileID: 8516297022724069044}
   IKBody: {fileID: 6423676319734917729}
---- !u!114 &699835362
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2093207351254691191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce69dd88838504c4c988eb0d63cad28a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LeftControllerTransform: {fileID: 2680276330383280116}
-  RightControllerTransform: {fileID: 2680559463926737338}
-  ClimbingCapsuleHeight: 0.5
-  ClimbingCapsuleCenter: -0.25
-  ApplyHapticsOnGrab: 1
-  VibrateFrequency: 0.3
-  VibrateAmplitude: 0.1
-  VibrateDuration: 0.1
-  GrippingClimbable: 0
 --- !u!1 &2097926285042086438
 GameObject:
   m_ObjectHideFlags: 0
@@ -21838,9 +21788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FadeOnSceneLoaded: 1
   FadeColor: {r: 0, g: 0, b: 0, a: 0.9882353}
-  FadeInSpeed: 2
-  FadeOutSpeed: 1
-  SceneFadeInDelay: 0.5
+  FadeSpeed: 6
 --- !u!1 &2683195716758895198
 GameObject:
   m_ObjectHideFlags: 0
@@ -22035,7 +21983,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2683195716791022644}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4b00acd070e37747b9e19b276d11877, type: 3}
   m_Name: 
@@ -27547,14 +27495,14 @@ MonoBehaviour:
   DefaultHoldType: 0
   DefaultGrabButton: 0
   GripAmount: 0.9
-  ReleaseGripAmount: 0.5
-  GrabCheckSeconds: 0.5
+  ReleaseGripAmount: 0.1
+  GrabCheckSeconds: 1
   EquipGrabbableOnStart: {fileID: 0}
   HandsGraphics: {fileID: 5319292122929744381}
   HeldGrabbable: {fileID: 0}
+  LastDropTime: 0
   ForceGrab: 0
   ForceRelease: 0
-  LastDropTime: 0
   PreviousPosition: {x: 0, y: 0, z: 0}
   DummyTransform: {fileID: 0}
   FreshGrip: 1
@@ -42632,7 +42580,7 @@ Transform:
   - {fileID: 4104033649585888544}
   - {fileID: 445136876721576512}
   - {fileID: 8534141261303319369}
-  - {fileID: 4954435429063333672}
+  - {fileID: 5853020178544119112}
   m_Father: {fileID: 5629437628528558491}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -42668,7 +42616,6 @@ MonoBehaviour:
   HandVelocity: 1500
   DisableHandCollidersOnGrab: 0
   ParentToAttachPoint: 1
-  SnapBackDistance: 1
   ThisGrabber: {fileID: 939187171837121272}
   DisableGrabber: {fileID: 6969157712627478182}
   ThisRemoteGrabber: {fileID: 7555089936346331499}
@@ -52269,8 +52216,8 @@ Transform:
   m_Children:
   - {fileID: 4201005729253553708}
   - {fileID: 3087413338468895693}
-  m_Father: {fileID: 4954435429063333672}
-  m_RootOrder: 0
+  m_Father: {fileID: 3384273866894783566}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -12.041, y: -13, z: 90}
 --- !u!114 &3639803888796159574
 MonoBehaviour:
@@ -52286,7 +52233,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HandAnchor: {fileID: 8320362180652782123}
   ResetHandAnchorPosition: 0
-  SmoothMovement: 0
+  SmoothMovement: 1
   HandAnimator: {fileID: 8619569999013336337}
   grabber: {fileID: 939187171837121272}
   GripAmount: 0
@@ -55086,14 +55033,14 @@ MonoBehaviour:
   DefaultHoldType: 0
   DefaultGrabButton: 0
   GripAmount: 0.9
-  ReleaseGripAmount: 0.5
+  ReleaseGripAmount: 0.1
   GrabCheckSeconds: 0.5
   EquipGrabbableOnStart: {fileID: 0}
   HandsGraphics: {fileID: 5629437628528558491}
   HeldGrabbable: {fileID: 0}
+  LastDropTime: 0
   ForceGrab: 0
   ForceRelease: 0
-  LastDropTime: 0
   PreviousPosition: {x: 0, y: 0, z: 0}
   DummyTransform: {fileID: 0}
   FreshGrip: 1
@@ -64903,37 +64850,6 @@ Transform:
   m_Father: {fileID: 4886896225781379965}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8275588536526742273
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2654776571735855009}
-  m_Layer: 0
-  m_Name: GhostHandHolder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2654776571735855009
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8275588536526742273}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 7955914143595822813}
-  m_Father: {fileID: 1110555163603718085}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8284429320783686081
 GameObject:
   m_ObjectHideFlags: 0
@@ -66940,14 +66856,14 @@ MonoBehaviour:
   DefaultHoldType: 0
   DefaultGrabButton: 0
   GripAmount: 0.9
-  ReleaseGripAmount: 0.5
+  ReleaseGripAmount: 0.1
   GrabCheckSeconds: 0.5
   EquipGrabbableOnStart: {fileID: 0}
   HandsGraphics: {fileID: 8516297022724069044}
   HeldGrabbable: {fileID: 0}
+  LastDropTime: 0
   ForceGrab: 0
   ForceRelease: 0
-  LastDropTime: 0
   PreviousPosition: {x: 0, y: 0, z: 0}
   DummyTransform: {fileID: 0}
   FreshGrip: 1
@@ -68628,14 +68544,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8685806519031648139}
   m_LocalRotation: {x: -0.15329288, y: 0.005917661, z: -0.69029075, w: 0.70708203}
-  m_LocalPosition: {x: -0.024000004, y: 0.051, z: 0.001}
+  m_LocalPosition: {x: -0.024, y: 0.051, z: 0.001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2764022567244039516}
   - {fileID: 6181537060729590410}
   - {fileID: 5500830232459500712}
-  m_Father: {fileID: 2654776571735855009}
-  m_RootOrder: 0
+  m_Father: {fileID: 1110555163603718085}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -12.041, y: 13.000001, z: -90}
 --- !u!114 &6813357096729050461
 MonoBehaviour:
@@ -68651,7 +68567,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HandAnchor: {fileID: 8320362178939264584}
   ResetHandAnchorPosition: 0
-  SmoothMovement: 0
+  SmoothMovement: 1
   HandAnimator: {fileID: 8553355396935602869}
   grabber: {fileID: 3218240453531958521}
   GripAmount: 0
