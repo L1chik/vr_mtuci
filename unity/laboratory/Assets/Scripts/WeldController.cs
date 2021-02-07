@@ -59,6 +59,7 @@ public class WeldController : MonoBehaviour
 
         weldedCable.AddComponent<Rigidbody>();
         var weldedCableGrabbable = weldedCable.AddComponent<Grabbable>();
+        weldedCableGrabbable.GrabPhysics = GrabPhysics.Kinematic;
         
         foreach (var cable in cables)
         {
@@ -69,8 +70,8 @@ public class WeldController : MonoBehaviour
             cable.AddComponent<GrabbableChild>().ParentGrabbable = weldedCableGrabbable;
         }
 
-        var leftGrabPointObj = new GameObject();
-        var rightGrabPointObj = new GameObject();
+        var leftGrabPointObj = new GameObject("LeftGrab");
+        var rightGrabPointObj = new GameObject("RightGrab");
         leftGrabPointObj.transform.parent = rightGrabPointObj.transform.parent = weldedCable.transform;
         leftGrabPointObj.transform.localPosition = leftGrabPointPositionOffset;
         leftGrabPointObj.transform.rotation = Quaternion.Euler(leftGrabPointRotationOffset);
