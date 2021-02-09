@@ -6,12 +6,16 @@ using UnityEngine;
 public class InitialData : MonoBehaviour
 {
     public static Configuration config;
+    public static GameObject tooltipPrefab;
+    public static GameObject errorTooltipPrefab;
 
     [SerializeField] private TextAsset jsonFile;
 
     private void Awake()
     {
         config = JsonUtility.FromJson<Configuration>(jsonFile.text);
+        tooltipPrefab = (GameObject) Resources.Load("ToolTip");
+        errorTooltipPrefab = (GameObject) Resources.Load("ErrorToolTip");
     }
 }
 
@@ -25,5 +29,7 @@ public class Configuration
 public class Task
 {
     public string name;
-    public string text;
+    public string helpHint;
+    public string errorHint;
+    public float[] offset;
 }

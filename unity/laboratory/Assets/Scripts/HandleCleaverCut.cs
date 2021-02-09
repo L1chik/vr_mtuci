@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class HandleCleaverCut : MonoBehaviour
 {
@@ -20,7 +16,7 @@ public class HandleCleaverCut : MonoBehaviour
         objectToCut.transform.parent = null;
         objectToCut.AddComponent<Rigidbody>();
 
-        FindObjectOfType<TasksLogic>().TaskIsDone("Cleaver");
+        // FindObjectOfType<TasksLogic>().TaskIsDone("Cleaver");
         Destroy(gameObject);
     }
 }

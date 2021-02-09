@@ -179,7 +179,8 @@ namespace BNG {
                 _prevGrip = Mathf.Lerp(_prevGrip, GripAmount, Time.deltaTime * HandAnimationSpeed);
                 _prevThumb = Mathf.Lerp(_prevThumb, ThumbAmount, Time.deltaTime * HandAnimationSpeed);
                 _prevPoint = Mathf.Lerp(_prevPoint, PointAmount, Time.deltaTime * HandAnimationSpeed);
-
+                
+                HandAnimator.SetBool("Trigger", input.LeftTriggerUp || input.RightTriggerUp);
                 // 0 = Hands Open, 1 = Grip closes                        
                 HandAnimator.SetFloat("Flex", _prevGrip);
 

@@ -119,10 +119,11 @@ namespace BNG {
             if (audioSource == null && (SwitchOnSound != null || SwitchOffSound != null)) {
                 audioSource = gameObject.AddComponent<AudioSource>();
             }
-        }
-
-        void Awake() {
-            transform.localEulerAngles = new Vector3(InitialXRotation, 0, 0);
+            
+            transform.localEulerAngles = new Vector3(
+                hingedJoint.axis.x > 0 ? InitialXRotation : transform.localEulerAngles.x,
+                hingedJoint.axis.y > 0 ? InitialXRotation : transform.localEulerAngles.y,
+                hingedJoint.axis.z > 0 ? InitialXRotation : transform.localEulerAngles.z);
         }
 
         void Update() {
@@ -139,7 +140,19 @@ namespace BNG {
 
             // Get the modified angle of of the lever. Use this to get percentage based on Min and Max angles.
             Vector3 currentRotation = transform.localEulerAngles;
-            float angle = Mathf.Floor(currentRotation.x);
+            float angle;
+            if (hingedJoint.axis.x > 0)
+            {
+                angle = Mathf.Floor(currentRotation.x);
+            }
+            else if (hingedJoint.axis.y > 0)
+            {
+                angle = Mathf.Floor(currentRotation.y);
+            }
+            else
+            {
+                angle = Mathf.Floor(currentRotation.z);
+            }
             angle = (angle > 180) ? angle - 360 : angle;
 
             // Set percentage of level position
