@@ -17,6 +17,7 @@ namespace BNG {
         Controller = 3,
         Rock = 4,
         StripperGrip = 5,
+        FingersGrip = 6,
         
         // Hand Pose ID's can be in any order
         PistolGrip = 50
