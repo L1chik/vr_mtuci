@@ -16,6 +16,6 @@ public class StripperBehaviour : MonoBehaviour
 
     private void Update()
     {
-        _animator.SetBool("Trigger", _grabbable.BeingHeld && (_input.LeftTriggerUp || _input.RightTriggerUp));
+        _animator.SetBool("Trigger", _grabbable.BeingHeld && (_input.LeftTrigger > 0 || _input.RightTrigger > 0));
     }
 }

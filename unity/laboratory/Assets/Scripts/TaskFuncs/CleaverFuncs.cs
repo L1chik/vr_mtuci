@@ -11,7 +11,7 @@ namespace TaskFuncs
 
         public override bool CheckRequirements()
         {
-            if (!snapZone.HeldItem) return false;
+            if (!snapZone.HeldItem) return true;
 
             return !snapZone.HeldItem.GetComponentInChildren<HandleCut>();
         }
