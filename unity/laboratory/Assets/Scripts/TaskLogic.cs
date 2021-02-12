@@ -1,3 +1,4 @@
+using System.Linq;
 using BNG;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,6 +10,7 @@ public class TaskLogic : MonoBehaviour
     private static UnityAction onTaskIndexChanged;
 
     [SerializeField] private string taskName;
+    [SerializeField] private GameObject[] objectsToHighlight;
 
     private Task _task;
     private ATaskFuncs _taskFuncs;
@@ -46,6 +48,8 @@ public class TaskLogic : MonoBehaviour
 
         if (!configTask.name.Equals(taskName)) return;
 
+        HighlightObjects();
+
         var offset = new Vector3(configTask.offset[0], configTask.offset[1], configTask.offset[2]);
         if (_taskFuncs == null || _taskFuncs.CheckRequirements())
         {
@@ -56,6 +60,24 @@ public class TaskLogic : MonoBehaviour
         {
             Destroy(_tooltipObj);
             ShowTooltip(InitialData.errorTooltipPrefab, configTask.errorHint, offset);
+        }
+    }
+
+    private void HighlightObjects()
+    {
+        foreach (var o in objectsToHighlight)
+        {
+            var _renderer = o.GetComponent<Renderer>();
+            _renderer.materials = new[] {_renderer.material, new Material(InitialData.highlightShader)};
+        }
+    }
+
+    private void DisableHighlight()
+    {
+        foreach (var o in objectsToHighlight)
+        {
+            var _renderer = o.GetComponent<Renderer>();
+            _renderer.materials[1] = null;
         }
     }
 
@@ -93,6 +115,7 @@ public class TaskLogic : MonoBehaviour
 
     private void DestroyComponent()
     {
+        DisableHighlight();
         onTaskIndexChanged -= HandleTooltip;
         if (_taskFuncs)
         {
