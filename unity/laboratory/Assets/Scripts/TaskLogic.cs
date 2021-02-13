@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using BNG;
 using UnityEngine;
@@ -42,7 +43,7 @@ public class TaskLogic : MonoBehaviour
 
         if (_taskFuncs) _taskFuncs.HandleTaskIsDone(taskName);
 
-        currentTaskInd++;
+        currentTaskInd = Math.Min(currentTaskInd + 1, InitialData.config.tasks.Length - 1);
         onTaskIndexChanged.Invoke();
         DestroyComponent();
     }

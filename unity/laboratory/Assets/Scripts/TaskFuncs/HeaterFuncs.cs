@@ -8,6 +8,7 @@ namespace TaskFuncs
     {
         [SerializeField] private SnapZone snapZone;
         [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip clip;
 
         public override bool CheckRequirements()
         {
@@ -16,6 +17,7 @@ namespace TaskFuncs
 
         public override void HandleTaskIsDone(string taskName)
         {
+            audioSource.clip = clip;
             audioSource.Play();
         }
     }
