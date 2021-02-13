@@ -5,8 +5,8 @@ namespace TaskFuncs
 {
     public class SnapFuncs : ATaskFuncs
     {
-        [SerializeField] private SnapZone leftSnapZone;
-        [SerializeField] private SnapZone rightSnapZone;
+        public SnapZone leftSnapZone;
+        public SnapZone rightSnapZone;
 
         private SnapZone _mainSnapZone;
 
@@ -32,13 +32,25 @@ namespace TaskFuncs
             return !_mainSnapZone.HeldItem.GetComponentInChildren<HandleCleaverCut>(true);
         }
 
-        public override void HandleInvalid()
+        public override void HandleTaskIsDone(string taskName)
         {
-            _mainSnapZone.HeldItem.transform.parent = null;
-            _mainSnapZone.HeldItem.transform.GetComponent<Grabbable>().enabled = true;
-            _mainSnapZone.GrabEquipped(null);
-            _mainSnapZone.HeldItem = null;
-            _mainSnapZone.HeldItem = null;
+            if (!taskName.Equals("SnapCable")) return;
+
+            var taskLogic = _mainSnapZone.transform.parent.gameObject.AddComponent<TaskLogic>();
+            taskLogic.taskName = "SnapCable2";
+
+            var snapFuncs = _mainSnapZone.gameObject.AddComponent<SnapFuncs>();
+            snapFuncs.leftSnapZone = leftSnapZone;
+            snapFuncs.rightSnapZone = rightSnapZone;
+
+            if (_mainSnapZone.name.Equals("Left"))
+            {
+                rightSnapZone.OnSnapEvent.AddListener((Grabbable g) => taskLogic.TaskIsDone());
+            }
+            else
+            {
+                leftSnapZone.OnSnapEvent.AddListener((Grabbable g) => taskLogic.TaskIsDone());
+            }
         }
     }
 }

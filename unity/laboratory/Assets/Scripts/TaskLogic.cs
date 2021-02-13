@@ -9,8 +9,8 @@ public class TaskLogic : MonoBehaviour
     private static int currentTaskInd;
     private static UnityAction onTaskIndexChanged;
 
-    [SerializeField] private string taskName;
-    [SerializeField] private GameObject[] objectsToHighlight;
+    public string taskName;
+    public GameObject[] objectsToHighlight;
 
     private Task _task;
     private ATaskFuncs _taskFuncs;
@@ -25,17 +25,22 @@ public class TaskLogic : MonoBehaviour
 
         _taskFuncs = GetComponent<ATaskFuncs>();
         onTaskIndexChanged += HandleTooltip;
-        if (_taskFuncs)
-        {
-            onTaskIndexChanged += _taskFuncs.HandleTaskIsDone;
-        }
 
         HandleTooltip();
     }
 
-    public void TaskIsDone()
+    public void TaskIsDone(bool check = true)
     {
+        if (check && _taskFuncs && !_taskFuncs.CheckRequirements())
+        {
+            _taskFuncs.HandleInvalid();
+            ShowError();
+            return;
+        }
+
         if (!InitialData.config.tasks[currentTaskInd].name.Equals(taskName)) return;
+
+        if (_taskFuncs) _taskFuncs.HandleTaskIsDone(taskName);
 
         currentTaskInd++;
         onTaskIndexChanged.Invoke();
@@ -51,38 +56,37 @@ public class TaskLogic : MonoBehaviour
         HighlightObjects();
 
         var offset = new Vector3(configTask.offset[0], configTask.offset[1], configTask.offset[2]);
-        if (_taskFuncs == null || _taskFuncs.CheckRequirements())
-        {
-            Destroy(_tooltipObj);
-            ShowTooltip(InitialData.tooltipPrefab, configTask.helpHint, offset);
-        }
-        else
-        {
-            Destroy(_tooltipObj);
-            ShowTooltip(InitialData.errorTooltipPrefab, configTask.errorHint, offset);
-        }
+
+        Destroy(_tooltipObj);
+        ShowTooltip(InitialData.tooltipPrefab, configTask.helpHint, offset);
     }
 
     private void HighlightObjects()
     {
+        if (objectsToHighlight == null || objectsToHighlight.Length == 0) return;
+
         foreach (var o in objectsToHighlight)
         {
             var _renderer = o.GetComponent<Renderer>();
-            _renderer.materials = new[] {_renderer.material, new Material(InitialData.highlightShader)};
+            _renderer.materials = new[] {_renderer.material, new Material(InitialData.highlightMaterial)};
         }
     }
 
     private void DisableHighlight()
     {
+        if (objectsToHighlight == null || objectsToHighlight.Length == 0) return;
+
         foreach (var o in objectsToHighlight)
         {
             var _renderer = o.GetComponent<Renderer>();
-            _renderer.materials[1] = null;
+            _renderer.materials = new[] {_renderer.material};
         }
     }
 
     public void CheckRequirements()
     {
+        if (_taskFuncs == null) return;
+
         if (_taskFuncs.CheckRequirements())
         {
             _taskFuncs.HandleIsChecked();
@@ -91,16 +95,21 @@ public class TaskLogic : MonoBehaviour
 
         _taskFuncs.HandleInvalid();
 
-        var offset = new Vector3(_task.offset[0], _task.offset[1], _task.offset[2]);
-
-        Destroy(_tooltipObj);
-        ShowTooltip(InitialData.errorTooltipPrefab, _task.errorHint, offset);
+        ShowError();
     }
 
     public void DestroyTooltip()
     {
         if (_taskFuncs.CheckRequirements()) return;
         Destroy(_tooltipObj);
+    }
+
+    private void ShowError()
+    {
+        var offset = new Vector3(_task.offset[0], _task.offset[1], _task.offset[2]);
+
+        Destroy(_tooltipObj);
+        ShowTooltip(InitialData.errorTooltipPrefab, _task.errorHint, offset);
     }
 
     private void ShowTooltip(GameObject prefab, string text, Vector3 offset)
@@ -117,10 +126,6 @@ public class TaskLogic : MonoBehaviour
     {
         DisableHighlight();
         onTaskIndexChanged -= HandleTooltip;
-        if (_taskFuncs)
-        {
-            onTaskIndexChanged -= _taskFuncs.HandleTaskIsDone;
-        }
 
         Destroy(_taskFuncs);
         Destroy(_tooltipObj);

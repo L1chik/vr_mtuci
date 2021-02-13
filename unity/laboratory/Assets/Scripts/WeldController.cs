@@ -16,11 +16,15 @@ public class WeldController : MonoBehaviour
     [SerializeField] private Vector3 rightGrabPointRotationOffset;
 
     private JointHelper _lidJointHelper;
-    private GameObject[] cables = new GameObject[2];
+    private GameObject[] _cables = new GameObject[2];
+    private TaskLogic _taskLogic;
+    private ParticleSystem _particle;
 
     private void Start()
     {
         _lidJointHelper = mainLid.GetComponent<JointHelper>();
+        _taskLogic = GetComponent<TaskLogic>();
+        _particle = GetComponentInChildren<ParticleSystem>();
     }
 
     public void StartWelding()
@@ -31,24 +35,23 @@ public class WeldController : MonoBehaviour
             return;
         }
 
-        cables[0] = leftCableSnapZone.HeldItem.gameObject;
-        cables[1] = rightCableSnapZone.HeldItem.gameObject;
+        _cables[0] = leftCableSnapZone.HeldItem.gameObject;
+        _cables[1] = rightCableSnapZone.HeldItem.gameObject;
 
         LockLid();
 
-        // TODO: Start particles
+        _particle.Play();
 
         StartCoroutine(Welding());
     }
 
     private IEnumerator Welding()
     {
-        // TODO: Connect cable ends
         var weldedCable = new GameObject("WeldedCable");
         weldedCable.transform.position = leftCableSnapZone.transform.parent.TransformPoint(0, 0, 0);
 
-        var leftCable = cables[0];
-        var rightCable = cables[1];
+        var leftCable = _cables[0];
+        var rightCable = _cables[1];
 
         leftCableSnapZone.HeldItem = rightCableSnapZone.HeldItem = null;
         leftCable.transform.parent = rightCable.transform.parent = weldedCable.transform;
@@ -61,9 +64,10 @@ public class WeldController : MonoBehaviour
         var weldedCableGrabbable = weldedCable.AddComponent<Grabbable>();
         weldedCableGrabbable.GrabPhysics = GrabPhysics.Kinematic;
         
-        foreach (var cable in cables)
+        foreach (var cable in _cables)
         {
             Destroy(cable.GetComponent<Rigidbody>());
+            Destroy(cable.GetComponent<GrabbableUnityEvents>());
             Destroy(cable.GetComponent<Grabbable>());
             Destroy(cable.GetComponent<SnapZoneOffset>());
 
@@ -88,20 +92,20 @@ public class WeldController : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        // TODO: Stop particles
+        _particle.Stop();
 
         UnlockLid();
 
-        Debug.Log("Done");
+        _taskLogic.TaskIsDone(false);
     }
 
     private void LockLid()
     {
-        _lidJointHelper.LockXRotation = _lidJointHelper.LockYRotation = _lidJointHelper.LockZRotation = true;
+        _lidJointHelper.LockZRotation = true;
     }
 
     private void UnlockLid()
     {
-        _lidJointHelper.LockXRotation = _lidJointHelper.LockYRotation = _lidJointHelper.LockZRotation = false;
+        _lidJointHelper.LockZRotation = false;
     }
 }

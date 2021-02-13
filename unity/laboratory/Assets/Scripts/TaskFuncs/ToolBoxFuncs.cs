@@ -12,7 +12,7 @@ namespace TaskFuncs
             _stripperGrabEvents = GameObject.FindWithTag("Stripper").GetComponent<GrabbableUnityEvents>();
         }
 
-        public override void HandleTaskIsDone()
+        public override void HandleTaskIsDone(string taskName)
         {
             _stripperGrabEvents.onGrab.RemoveAllListeners();
         }

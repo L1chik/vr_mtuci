@@ -15,7 +15,7 @@ public abstract class ATaskFuncs : MonoBehaviour
     {
     }
 
-    public virtual void HandleTaskIsDone()
+    public virtual void HandleTaskIsDone(string taskName)
     {
     }
 }
