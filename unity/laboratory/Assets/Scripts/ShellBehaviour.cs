@@ -17,5 +17,20 @@ public class ShellBehaviour : MonoBehaviour
         {
             boxCollider.enabled = true;
         }
+
+        var coatTaskLogic = cable.gameObject.AddComponent<TaskLogic>();
+        var claddingTaskLogic = cable.gameObject.AddComponent<TaskLogic>();
+        coatTaskLogic.taskName = "CleanIsolation";
+        claddingTaskLogic.taskName = "CleanIsolation2";
+
+        var cableParts = cable.GetChild(0);
+        var coat = cableParts.GetChild(2).gameObject;
+        var cladding = cableParts.GetChild(1).gameObject;
+
+        coatTaskLogic.objectsToHighlight = new[] {coat};
+        claddingTaskLogic.objectsToHighlight = new[] {cladding};
+
+        coat.GetComponentInChildren<HandleCut>(true).onFinishCut.AddListener(() => coatTaskLogic.TaskIsDone());
+        cladding.GetComponentInChildren<HandleCut>(true).onFinishCut.AddListener(() => claddingTaskLogic.TaskIsDone());
     }
 }

@@ -1,7 +1,10 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class HandleCleaverCut : MonoBehaviour
 {
+    public UnityEvent onFinishCut;
+
     private GameObject objectToCut;
 
     private void Start()
@@ -13,10 +16,11 @@ public class HandleCleaverCut : MonoBehaviour
     {
         if (!other.tag.Equals("Cleaver")) return;
 
+        onFinishCut?.Invoke();
+
         objectToCut.transform.parent = null;
         objectToCut.AddComponent<Rigidbody>();
-
-        // FindObjectOfType<TasksLogic>().TaskIsDone("Cleaver");
+        
         Destroy(gameObject);
     }
 }

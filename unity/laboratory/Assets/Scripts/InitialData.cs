@@ -8,6 +8,7 @@ public class InitialData : MonoBehaviour
     public static Configuration config;
     public static GameObject tooltipPrefab;
     public static GameObject errorTooltipPrefab;
+    public static Material highlightMaterial;
 
     [SerializeField] private TextAsset jsonFile;
 
@@ -16,6 +17,7 @@ public class InitialData : MonoBehaviour
         config = JsonUtility.FromJson<Configuration>(jsonFile.text);
         tooltipPrefab = (GameObject) Resources.Load("ToolTip");
         errorTooltipPrefab = (GameObject) Resources.Load("ErrorToolTip");
+        highlightMaterial = (Material) Resources.Load("highlights");
     }
 }
 

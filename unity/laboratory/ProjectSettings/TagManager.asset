@@ -9,6 +9,7 @@ TagManager:
   - Cutter
   - Stripper
   - MoveTrigger
+  - Shell
   layers:
   - Default
   - TransparentFX
