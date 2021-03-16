@@ -15,6 +15,7 @@ public class InitialData : MonoBehaviour
     private void Awake()
     {
         config = JsonUtility.FromJson<Configuration>(jsonFile.text);
+        Messenger<Task[]>.Broadcast(MessageEvent.RESET_TASKS, config.tasks);
         tooltipPrefab = (GameObject) Resources.Load("ToolTip");
         errorTooltipPrefab = (GameObject) Resources.Load("ErrorToolTip");
         highlightMaterial = (Material) Resources.Load("highlights");
@@ -25,13 +26,4 @@ public class InitialData : MonoBehaviour
 public class Configuration
 {
     public Task[] tasks;
-}
-
-[Serializable]
-public class Task
-{
-    public string name;
-    public string helpHint;
-    public string errorHint;
-    public float[] offset;
 }
